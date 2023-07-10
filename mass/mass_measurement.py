@@ -6,9 +6,9 @@ import glob
 
 def create_file(output_file):
     df = pd.DataFrame(columns=["component","componentType","stage","testType",
-			"date","runNumer","property1 key", "property1 value","property2 key", 
-	        "property2 value","property3 key", "property3 value","property4 key", 
-	        "property4 value","passed","problems","result1 key","result1 value"])
+			"date","runNumber","property1_key", "property1_value","property2_key", 
+	        "property2_value","property3_key", "property3_value","property4_key", 
+	        "property4_value","passed","problems","result1_key","result1_value"])
     
     files_present = glob.glob(str(output_file))
     if not files_present:
@@ -30,31 +30,55 @@ def add_date_folder():
 
 def main():
     path = add_date_folder()
-    output_file = Path(path,"test.csv")
+    file_name = "mass_measurement_"+datetime.now().strftime("%m_%d_%y")+".csv"
+    output_file = Path(path,file_name)
     create_file(output_file)
-    add_data(output_file,1)
+
+    mass = 900.1
+    serial = "20UPGXB2000035"
+    run = 1
+    analysis_version = "v1"
+    scale_accuracy = 1.
+    add_data(output_file,serial,mass,scale_accuracy,run,analysis_version)
 
 
 
-def add_data(output_file,mass):
+def add_data(output_file,serial,mass,scale_accuracy,run,analysis_version):
     df = pd.read_csv(output_file)
 
     print(df)
 
     index = len(df.index)
 
-    df.loc[index,"component"] = "20UPGXB2000035"
+    df.loc[index,"component"] = serial
     df.loc[index,"componentType"] = "BARE_MODULE"
     df.loc[index,"stage"] = "BAREMODULERECEPTION"
     df.loc[index,"testType"] = "MASS_MEASUREMENT"
     df.loc[index,"date"] = datetime.now().strftime("%d/%m/%y")
+    df.loc[index,"runNumber"] = run
+    df.loc[index,"property1_key"] = "SCALE_ACCURACY"
+    df.loc[index,"property1_value"] = scale_accuracy
+    df.loc[index,"property2_key"] = "ANALYSIS_VERSION"
+    df.loc[index,"property2_value"] = analysis_version
+    df.loc[index,"runNumber"] = run
+    df.loc[index,"passed"] = test_passed(mass)
+    df.loc[index,"problems"] = test_problems(mass)
+    df.loc[index,"result1_key"] = "MASS"
+    df.loc[index,"result1_value"] = mass 
     #df.loc[len(df.index)] = data
 
     print(df)
 
     df.to_csv(output_file,index=False)
 
+def test_passed(mass):
+    # insert logic
+    return "True"
 
+
+def test_problems(mass):
+    # insert logic
+    return "False"
 
 if __name__ == "__main__":
     main()
