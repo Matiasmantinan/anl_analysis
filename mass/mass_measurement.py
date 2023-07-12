@@ -3,6 +3,7 @@ from datetime import datetime
 import os
 from pathlib import Path
 import glob
+import json
 
 def create_file(output_file):
     df = pd.DataFrame(columns=["component","institution","componentType","stage","testType",
@@ -21,6 +22,10 @@ def add_date_folder():
     now = datetime.now()
     date = now.strftime("%m-%d-%Y")
     path = Path("../", date)
+    return add_folder(path)
+
+
+def add_folder(path):
     files_present = glob.glob(str(path))
     if not files_present:
         path.mkdir(parents=True, exist_ok=False)
@@ -28,8 +33,10 @@ def add_date_folder():
 
 
 
+
 def main():
     path = add_date_folder()
+    json_path = add_folder(Path(path,"json_data"))
     file_name = "mass_measurement_"+datetime.now().strftime("%m_%d_%y")+".csv"
     output_file = Path(path,file_name)
     create_file(output_file)
@@ -40,6 +47,7 @@ def main():
     analysis_version = "v1"
     scale_accuracy = 1.
     add_data_csv(output_file,serial,mass,scale_accuracy,run,analysis_version)
+    add_data_json(json_path,serial,mass,scale_accuracy,run,analysis_version)
 
 
 
@@ -74,18 +82,39 @@ def add_data_csv(output_file,serial,mass,scale_accuracy,run,analysis_version):
 
 
 
-def add_data_json(output_file,serial,mass,scale_accuracy,run,analysis_version):
-    print("add_data_json")
+def add_data_json(json_path,serial,mass,scale_accuracy,run,analysis_version):
+    json_name = serial+"_MASS_"+datetime.now().strftime("%m_%d_%y")+".json"
+    json_file = Path(json_path, json_name)
+    mass_dict = {
+        "component":serial,
+        "testType":"MASS_MEASUREMENT",
+        "institution":"ANL",
+        "runNumber":str(run),
+        "date":"2023-07-12T15:04:12.455Z",
+        "passed": True,
+        "problems": False,
+        "properties":{
+            "SCALE_ACCURACY":scale_accuracy,
+            "ANALYSIS_VERSION":analysis_version,
+            },
+            "results":{
+                "MASS":mass
+                },
+                }
+    
+    mass_json = json.dumps(mass_dict)
+    with open(json_file, "w") as outfile:
+        outfile.write(mass_json)
 
 
 
 def test_passed(mass):
-    # insert logic
+    #insert logic
     return "True"
 
 
 def test_problems(mass):
-    # insert logic
+    #insert logic
     return "False"
 
 if __name__ == "__main__":
