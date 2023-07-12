@@ -29,7 +29,6 @@ def add_date_folder():
 
 
 def main():
-    print("hello world")
     path = add_date_folder()
     file_name = "mass_measurement_"+datetime.now().strftime("%m_%d_%y")+".csv"
     output_file = Path(path,file_name)
