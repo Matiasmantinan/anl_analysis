@@ -90,7 +90,7 @@ def add_data_json(json_path,serial,mass,scale_accuracy,run,analysis_version):
         "testType":"MASS_MEASUREMENT",
         "institution":"ANL",
         "runNumber":str(run),
-        "date":"2023-07-12T15:04:12.455Z",
+        "date":str(datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')),
         "passed": True,
         "problems": False,
         "properties":{
