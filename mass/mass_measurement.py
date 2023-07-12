@@ -5,7 +5,7 @@ from pathlib import Path
 import glob
 
 def create_file(output_file):
-    df = pd.DataFrame(columns=["component","componentType","stage","testType",
+    df = pd.DataFrame(columns=["component","institution","componentType","stage","testType",
 			"date","runNumber","property1_key", "property1_value","property2_key", 
 	        "property2_value","property3_key", "property3_value","property4_key", 
 	        "property4_value","passed","problems","result1_key","result1_value"])
@@ -29,6 +29,7 @@ def add_date_folder():
 
 
 def main():
+    print("hello world")
     path = add_date_folder()
     file_name = "mass_measurement_"+datetime.now().strftime("%m_%d_%y")+".csv"
     output_file = Path(path,file_name)
@@ -39,11 +40,11 @@ def main():
     run = 1
     analysis_version = "v1"
     scale_accuracy = 1.
-    add_data(output_file,serial,mass,scale_accuracy,run,analysis_version)
+    add_data_csv(output_file,serial,mass,scale_accuracy,run,analysis_version)
 
 
 
-def add_data(output_file,serial,mass,scale_accuracy,run,analysis_version):
+def add_data_csv(output_file,serial,mass,scale_accuracy,run,analysis_version):
     df = pd.read_csv(output_file)
 
     print(df)
@@ -51,6 +52,7 @@ def add_data(output_file,serial,mass,scale_accuracy,run,analysis_version):
     index = len(df.index)
 
     df.loc[index,"component"] = serial
+    df.loc[index,"institution"] = "ANL"
     df.loc[index,"componentType"] = "BARE_MODULE"
     df.loc[index,"stage"] = "BAREMODULERECEPTION"
     df.loc[index,"testType"] = "MASS_MEASUREMENT"
@@ -70,6 +72,13 @@ def add_data(output_file,serial,mass,scale_accuracy,run,analysis_version):
     print(df)
 
     df.to_csv(output_file,index=False)
+
+
+
+def add_data_json(output_file,serial,mass,scale_accuracy,run,analysis_version):
+    print("add_data_json")
+
+
 
 def test_passed(mass):
     # insert logic
