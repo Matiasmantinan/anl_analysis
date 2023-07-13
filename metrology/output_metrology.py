@@ -63,26 +63,34 @@ def add_metrology_data_csv(output_file,serial,mass,scale_accuracy,run,analysis_v
 
 
 
-def add_metrology_data_json(json_path,serial,mass,scale_accuracy,run,analysis_version):
+def add_metrology_BM_data_json(json_path,serial,run,analysis_version):
     json_name = serial+"_MASS_"+datetime.now().strftime("%m_%d_%y")+".json"
     json_file = Path(json_path, json_name)
     mass_dict = {
         "component":serial,
-        "testType":"MASS_MEASUREMENT",
+        "testType":"QUAD_BARE_MODULE_METROLOGY",
         "institution":"ANL",
         "runNumber":str(run),
         "date":str(datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')),
         "passed": True,
         "problems": False,
         "properties":{
-            "SCALE_ACCURACY":scale_accuracy,
             "ANALYSIS_VERSION":analysis_version,
+        },
+        "results":{
+            "SENSOR_X":500.88,
+            "SENSOR_Y":952.92,
+            "SENSOR_THICKNESS":623.38,
+            "SENSOR_THICKNESS_STD_DEVIATION":868.7,
+            "FECHIPS_X":442.33,
+            "FECHIPS_Y":591.76,
+            "FECHIP_THICKNESS":833.83,
+            "FECHIP_THICKNESS_STD_DEVIATION":514.55,
+            "BARE_MODULE_THICKNESS":895.9,
+            "BARE_MODULE_THICKNESS_STD_DEVIATION":363.45
             },
-            "results":{
-                "MASS":mass
-                },
-                }
-    
+        }
+
     mass_json = json.dumps(mass_dict)
     with open(json_file, "w") as outfile:
         outfile.write(mass_json)

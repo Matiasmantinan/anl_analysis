@@ -12,7 +12,7 @@ def main():
 
     parser.add_argument("-i", "--inputFile", type=str, help = "input txt file",default=None)
     #parser.add_argument("-j", "--inputFileJig", type=str, help = "input jig txt file", default = "Jig_SQ.txt" )
-    parser.add_argument("-m", "--measurement", type=str, help = "measurement type, right now the measurement: flex, realBM, dummyBM or assembly")
+    parser.add_argument("-m", "--measurement", type=str, help = "measurement type, right now the measurement: flex, BM, dummyBM or assembly")
 
     args = parser.parse_args()
 
@@ -42,12 +42,12 @@ def main():
         infile = addSerialQuery(infile)
         infile_jig = "AssembledModuleJig_SQ.txt"
         assemblyMeasurement(infile,infile_jig)
-    elif measurement == "realBM":
+    elif measurement == "BM":
         if not infile:
             infile = max(glob.iglob("realBM_SQ_*"), key=os.path.getctime)
         infile = addSerialQuery(infile)
         infile_jig = "realBMJig_SQ.txt"
-        assemblyrealMeasurement(infile, infile_jig)
+        BMMeasurement(infile, infile_jig)
 
 
 
@@ -293,7 +293,7 @@ def assemblyMeasurement(infile,infile_jig):
     HV_z = np.subtract(jig_HV, HV)
     print ("Avg HV height: ", abs(np.mean(HV_z)) )
 
-def assemblyrealMeasurement(infile, infile_jig):
+def BMMeasurement(infile, infile_jig):
     DX_FE = 0
     DY_FE = 0
     DX_Sensor = 0
