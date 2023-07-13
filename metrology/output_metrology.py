@@ -70,7 +70,7 @@ def add_metrology_data_csv(output_file,serial,mass,scale_accuracy,run,analysis_v
 
 
 def add_metrology_BM_data_json(json_path,serial,run,analysis_version,results):
-    json_name = serial+"_MASS_"+datetime.now().strftime("%m_%d_%y")+".json"
+    json_name = serial+"_METROLOGY_"+datetime.now().strftime("%m_%d_%y")+".json"
     json_file = Path(json_path, json_name)
     mass_dict = {
         "component":serial,

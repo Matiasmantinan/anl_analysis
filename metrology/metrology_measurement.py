@@ -5,7 +5,7 @@ import glob
 import os
 from pathlib import Path
 
-import output_metrology
+from output_metrology import *
 
 
 def main():
@@ -22,6 +22,13 @@ def main():
 
     measurement = args.measurement
     infile = args.inputFile
+
+
+    path = add_date_folder()
+    json_path = add_folder(Path(path,"json_data"))
+    file_name = "metrology_measurement_"+datetime.now().strftime("%m_%d_%y")+".csv"
+    output_csv_file = Path(path,file_name)
+    create_metrology_csv_file(output_csv_file)
 
 
 
@@ -48,7 +55,7 @@ def main():
             infile = max(glob.iglob("realBM_SQ_*"), key=os.path.getctime)
         infile,serialNum = addSerialQuery(infile)
         infile_jig = "realBMJig_SQ.txt"
-        BMMeasurement(serialNum,infile, infile_jig)
+        BMMeasurement(serialNum,infile, infile_jig, output_csv_file, json_path)
 
 
 
@@ -294,7 +301,7 @@ def assemblyMeasurement(infile,infile_jig):
     HV_z = np.subtract(jig_HV, HV)
     print ("Avg HV height: ", abs(np.mean(HV_z)) )
 
-def BMMeasurement(serialNum,infile, infile_jig):
+def BMMeasurement(serialNum,infile, infile_jig,outputcsv,outputjson):
     DX_FE = 0
     DY_FE = 0
     DX_Sensor = 0
@@ -334,8 +341,8 @@ def BMMeasurement(serialNum,infile, infile_jig):
     FE_left_z = (np.subtract(FE_left, FE_left_jig))
     FE_right_z = (np.subtract(FE_right, FE_right_jig))
     bm_z = (np.subtract(bm, bm_jig))
-   
-    print ("BM thickness average: ", mean(bm_z))  
+
+    print ("BM thickness average: ", np.mean(bm_z))  
     print ("BM thickness std dev: ", np.std(bm_z))
     print("FE Left thickness average: ", mean(FE_left_z))
     print("FE Left std dev: ", np.std(FE_left_z)) 
@@ -346,22 +353,22 @@ def BMMeasurement(serialNum,infile, infile_jig):
     print("Sensor Y Distance: ", DY_Sensor)
     print("Sensor X Distance: ", DX_Sensor)
     
+
     
     results = {
-            "SENSOR_X":500.88,
-            "SENSOR_Y":952.92,
-            "SENSOR_THICKNESS":623.38,
-            "SENSOR_THICKNESS_STD_DEVIATION":868.7,
-            "FECHIPS_X":442.33,
-            "FECHIPS_Y":591.76,
-            "FECHIP_THICKNESS":833.83,
-            "FECHIP_THICKNESS_STD_DEVIATION":514.55,
-            "BARE_MODULE_THICKNESS":895.9,
-            "BARE_MODULE_THICKNESS_STD_DEVIATION":363.45
+            "SENSOR_X":DX_Sensor,
+            "SENSOR_Y":DY_Sensor,
+            #"SENSOR_THICKNESS":623.38,
+            #"SENSOR_THICKNESS_STD_DEVIATION":868.7,
+            "FECHIPS_X":DX_FE,
+            "FECHIPS_Y":DY_FE,
+            "FECHIP_THICKNESS":np.mean(FE_left_z+FE_right_z),
+            "FECHIP_THICKNESS_STD_DEVIATION":np.std(FE_left_z+FE_right_z),
+            "BARE_MODULE_THICKNESS":np.mean(bm_z),
+            "BARE_MODULE_THICKNESS_STD_DEVIATION":np.std(bm_z)
             }
-    output_metrology.add_metrology_BM_data_json(Path("./"),serialNum,1,1,results)
-
-
+    
+    add_metrology_BM_data_json(outputjson,serialNum,1,1,results)
 
 # receives string infile and string serialNum
 # renames file and returns new name
