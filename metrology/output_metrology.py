@@ -91,3 +91,26 @@ def add_metrology_BM_data_json(json_path,serial,run,analysis_version,results):
         outfile.write(mass_json)
 
 
+
+
+def add_metrology_FLEX_data_json(json_path,serial,run,analysis_version,results):
+    json_name = serial+"_METROLOGY_"+datetime.now().strftime("%m_%d_%y")+".json"
+    json_file = Path(json_path, json_name)
+    mass_dict = {
+        "component":serial,
+        "testType":"METROLOGY",
+        "institution":"ANL",
+        "runNumber":str(run),
+        "date":str(datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')),
+        "passed": True,
+        "problems": False,
+        "properties":{
+            "ANALYSIS_VERSION":analysis_version,
+        },
+            "results": results,
+        }
+
+    mass_json = json.dumps(mass_dict)
+    with open(json_file, "w") as outfile:
+        outfile.write(mass_json)
+

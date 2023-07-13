@@ -37,7 +37,7 @@ def main():
             infile = max(glob.iglob("flex_SQ_*"), key=os.path.getctime)
         infile,serialNum = addSerialQuery(infile)
         infile_jig = "Jig_SQ.txt"
-        flexMeasurement(infile,infile_jig)
+        flexMeasurement(serialNum,infile,infile_jig,output_csv_file,json_path)
     elif measurement=="dummyBM":
         if not infile:
             infile = max(glob.iglob("dummyBM_SQ*"), key=os.path.getctime)
@@ -62,7 +62,7 @@ def main():
 
 
 # perform analisis for a flex
-def flexMeasurement(infile,infile_jig):
+def flexMeasurement(serialNum,infile,infile_jig,outputcsv,outputjson):
 
     len_Y = []
     len_X = []
@@ -136,9 +136,11 @@ def flexMeasurement(infile,infile_jig):
 
 
             if "distance_X" in line:
-                print ("X: ", float((line.split()[1].replace('DX|','')).replace('|','')))
+                x_dimension =  float((line.split()[1].replace('DX|','')).replace('|',''))
+                print ("X: ",x_dimension)
             if "distance_Y" in line:
-                print ("Y: ", float((line.split()[1].replace('DY|','')).replace('|','')))
+                y_dimension =  float((line.split()[1].replace('DY|','')).replace('|',''))
+                print ("Y: ", y_dimension)
 
 
     pickup_1_z =  (np.subtract(jig_pickup_1, pickup_1))
@@ -149,17 +151,36 @@ def flexMeasurement(infile,infile_jig):
     print ("Pickup 2: ", abs(np.mean(pickup_2_z)), "   ", np.std(pickup_2_z) )
     print ("Pickup 3: ", abs(np.mean(pickup_3_z)), "   ", np.std(pickup_3_z))
     print ("Pickup 4: ", abs(np.mean(pickup_4_z)), "   ", np.std(pickup_4_z))
-    print ("Avg pickup thickness:  ", abs(np.mean([np.mean(pickup_1_z), np.mean(pickup_2_z), np.mean(pickup_3_z), np.mean(pickup_4_z)])))
-    print ("Std Dev pickup thickness: ", np.std([np.mean(pickup_1_z), np.mean(pickup_2_z), np.mean(pickup_3_z), np.mean(pickup_4_z)]))
+
+
+    avg_pickup_thickness = abs(np.mean([np.mean(pickup_1_z), np.mean(pickup_2_z), np.mean(pickup_3_z), np.mean(pickup_4_z)]))
+    std_pickup_thickness = np.std([np.mean(pickup_1_z), np.mean(pickup_2_z), np.mean(pickup_3_z), np.mean(pickup_4_z)])
+    print ("Avg pickup thickness:  ", avg_pickup_thickness)
+    print ("Std Dev pickup thickness: ", std_pickup_thickness)
 
     PC_1_z =  (np.subtract(jig_PC_1, PC_1))
     PC_2_z =  (np.subtract(jig_PC_2, PC_2))
     PC_3_z =  (np.subtract(jig_PC_3, PC_3))
 
-    print ("Average PC height:  ", abs(np.mean([np.mean(PC_1_z), np.mean(PC_2_z), np.mean(PC_3_z)])))
+    avg_pc_height = abs(np.mean([np.mean(PC_1_z), np.mean(PC_2_z), np.mean(PC_3_z)]))
+    print ("Average PC height:  ", avg_pc_height)
 
     HV_z = np.subtract(jig_HV, HV)
-    print ("Avg HV height: ", abs(np.mean(HV_z)) )
+    avg_HV_thickness = np.mean(HV_z)
+    print ("Avg HV height: ", avg_HV_thickness )
+
+    results = {
+        "X_DIMENSION": x_dimension,
+        "Y_DIMENSION": y_dimension,
+        "X-Y_DIMENSION_WITHIN_ENVELOP": True,
+        "AVERAGE_THICKNESS_FECHIP_PICKUP_AREAS": avg_pickup_thickness,
+        "STD_DEVIATION_THICKNESS_FECHIP_PICKUP_AREAS": std_pickup_thickness,
+        "HV_CAPACITOR_THICKNESS": avg_HV_thickness,
+        "HV_CAPACITOR_THICKNESS_WITHIN_ENVELOP": True,
+        "AVERAGE_THICKNESS_POWER_CONNECTOR": avg_pc_height
+    }
+
+    add_metrology_FLEX_data_json(outputjson, serialNum,1,"v1",results)
 
 
 def addSerialQuery(infile):
@@ -368,7 +389,7 @@ def BMMeasurement(serialNum,infile, infile_jig,outputcsv,outputjson):
             "BARE_MODULE_THICKNESS_STD_DEVIATION":np.std(bm_z)
             }
     
-    add_metrology_BM_data_json(outputjson,serialNum,1,1,results)
+    add_metrology_BM_data_json(outputjson,serialNum,1,"1",results)
 
 # receives string infile and string serialNum
 # renames file and returns new name
