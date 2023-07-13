@@ -1,11 +1,8 @@
-import pandas as pd
-from datetime import datetime
-import os
-from pathlib import Path
-import glob
-import json
 
-def create_mass_csv_file(output_file):
+
+
+
+def create_metrology_csv_file(output_file):
     df = pd.DataFrame(columns=["component","institution","componentType","stage","testType",
 			"date","runNumber","property1_key", "property1_value","property2_key", 
 	        "property2_value","passed","problems","result1_key","result1_value"])
@@ -33,30 +30,9 @@ def add_folder(path):
 
 
 
-def main():
-    path = add_date_folder()
-    json_path = add_folder(Path(path,"json_data"))
-    file_name = "mass_measurement_"+datetime.now().strftime("%m_%d_%y")+".csv"
-    output_file = Path(path,file_name)
-    create_mass_csv_file(output_file)
-
-    #mass = 900.1
-    #serial = "20UPGXB2000035"
-    #run = 1
-    #analysis_version = "v1"
-    scale_accuracy = 1. # Harcoded for now
-
-    mass = float(input("Enter mass: "))
-    serial = input("Enter serial number: ")
-    run = input("Enter run number: ")
-    analysis_version = input("Enter analysis version: ")
-
-    add_data_csv(output_file,serial,mass,scale_accuracy,run,analysis_version)
-    add_data_json(json_path,serial,mass,scale_accuracy,run,analysis_version)
 
 
-
-def add_data_csv(output_file,serial,mass,scale_accuracy,run,analysis_version):
+def add_metrology_data_csv(output_file,serial,mass,scale_accuracy,run,analysis_version):
     df = pd.read_csv(output_file)
 
     print(df)
@@ -87,7 +63,7 @@ def add_data_csv(output_file,serial,mass,scale_accuracy,run,analysis_version):
 
 
 
-def add_data_json(json_path,serial,mass,scale_accuracy,run,analysis_version):
+def add_metrology_data_json(json_path,serial,mass,scale_accuracy,run,analysis_version):
     json_name = serial+"_MASS_"+datetime.now().strftime("%m_%d_%y")+".json"
     json_file = Path(json_path, json_name)
     mass_dict = {
@@ -112,15 +88,3 @@ def add_data_json(json_path,serial,mass,scale_accuracy,run,analysis_version):
         outfile.write(mass_json)
 
 
-
-def test_passed(mass):
-    #insert logic
-    return "True"
-
-
-def test_problems(mass):
-    #insert logic
-    return "False"
-
-if __name__ == "__main__":
-    main()
