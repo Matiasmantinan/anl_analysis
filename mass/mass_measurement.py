@@ -21,7 +21,7 @@ def create_file(output_file):
 def add_date_folder():
     now = datetime.now()
     date = now.strftime("%m-%d-%Y")
-    path = Path("../", date)
+    path = Path("../results", date)
     return add_folder(path)
 
 
