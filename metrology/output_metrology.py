@@ -1,3 +1,9 @@
+import pandas as pd
+from datetime import datetime
+import os
+from pathlib import Path
+import glob
+import json
 
 
 
@@ -63,7 +69,7 @@ def add_metrology_data_csv(output_file,serial,mass,scale_accuracy,run,analysis_v
 
 
 
-def add_metrology_BM_data_json(json_path,serial,run,analysis_version):
+def add_metrology_BM_data_json(json_path,serial,run,analysis_version,results):
     json_name = serial+"_MASS_"+datetime.now().strftime("%m_%d_%y")+".json"
     json_file = Path(json_path, json_name)
     mass_dict = {
@@ -77,18 +83,7 @@ def add_metrology_BM_data_json(json_path,serial,run,analysis_version):
         "properties":{
             "ANALYSIS_VERSION":analysis_version,
         },
-        "results":{
-            "SENSOR_X":500.88,
-            "SENSOR_Y":952.92,
-            "SENSOR_THICKNESS":623.38,
-            "SENSOR_THICKNESS_STD_DEVIATION":868.7,
-            "FECHIPS_X":442.33,
-            "FECHIPS_Y":591.76,
-            "FECHIP_THICKNESS":833.83,
-            "FECHIP_THICKNESS_STD_DEVIATION":514.55,
-            "BARE_MODULE_THICKNESS":895.9,
-            "BARE_MODULE_THICKNESS_STD_DEVIATION":363.45
-            },
+            "results": results,
         }
 
     mass_json = json.dumps(mass_dict)

@@ -3,8 +3,9 @@ from statistics import mean
 import numpy as np
 import glob
 import os
+from pathlib import Path
 
-
+import output_metrology
 
 
 def main():
@@ -27,27 +28,27 @@ def main():
     if measurement=="flex":
         if not infile:
             infile = max(glob.iglob("flex_SQ_*"), key=os.path.getctime)
-        infile = addSerialQuery(infile)
+        infile,serialNum = addSerialQuery(infile)
         infile_jig = "Jig_SQ.txt"
         flexMeasurement(infile,infile_jig)
     elif measurement=="dummyBM":
         if not infile:
             infile = max(glob.iglob("dummyBM_SQ*"), key=os.path.getctime)
-        infile = addSerialQuery(infile)
+        infile,serialNum = addSerialQuery(infile)
         infile_jig = "dummyBMJig_SQ.txt"
         dummyMeasurement(infile,infile_jig)
     elif measurement =="assembly":
         if not infile:
             infile = max(glob.iglob("AssembledModule_SQ*"), key=os.path.getctime)
-        infile = addSerialQuery(infile)
+        infile,serialNum = addSerialQuery(infile)
         infile_jig = "AssembledModuleJig_SQ.txt"
         assemblyMeasurement(infile,infile_jig)
     elif measurement == "BM":
         if not infile:
             infile = max(glob.iglob("realBM_SQ_*"), key=os.path.getctime)
-        infile = addSerialQuery(infile)
+        infile,serialNum = addSerialQuery(infile)
         infile_jig = "realBMJig_SQ.txt"
-        BMMeasurement(infile, infile_jig)
+        BMMeasurement(serialNum,infile, infile_jig)
 
 
 
@@ -170,7 +171,7 @@ def addSerialQuery(infile):
         else:
             print("Error. Press y or n.")
 
-    return infile
+    return (infile,serialNum)
 
 
 def dummyMeasurement(infile,infile_jig):
@@ -293,7 +294,7 @@ def assemblyMeasurement(infile,infile_jig):
     HV_z = np.subtract(jig_HV, HV)
     print ("Avg HV height: ", abs(np.mean(HV_z)) )
 
-def BMMeasurement(infile, infile_jig):
+def BMMeasurement(serialNum,infile, infile_jig):
     DX_FE = 0
     DY_FE = 0
     DX_Sensor = 0
@@ -344,6 +345,22 @@ def BMMeasurement(infile, infile_jig):
     print("FE X Distance: ", DX_FE)
     print("Sensor Y Distance: ", DY_Sensor)
     print("Sensor X Distance: ", DX_Sensor)
+    
+    
+    results = {
+            "SENSOR_X":500.88,
+            "SENSOR_Y":952.92,
+            "SENSOR_THICKNESS":623.38,
+            "SENSOR_THICKNESS_STD_DEVIATION":868.7,
+            "FECHIPS_X":442.33,
+            "FECHIPS_Y":591.76,
+            "FECHIP_THICKNESS":833.83,
+            "FECHIP_THICKNESS_STD_DEVIATION":514.55,
+            "BARE_MODULE_THICKNESS":895.9,
+            "BARE_MODULE_THICKNESS_STD_DEVIATION":363.45
+            }
+    output_metrology.add_metrology_BM_data_json(Path("./"),serialNum,1,1,results)
+
 
 
 # receives string infile and string serialNum
