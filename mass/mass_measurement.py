@@ -8,8 +8,7 @@ import json
 def create_file(output_file):
     df = pd.DataFrame(columns=["component","institution","componentType","stage","testType",
 			"date","runNumber","property1_key", "property1_value","property2_key", 
-	        "property2_value","property3_key", "property3_value","property4_key", 
-	        "property4_value","passed","problems","result1_key","result1_value"])
+	        "property2_value","passed","problems","result1_key","result1_value"])
     
     files_present = glob.glob(str(output_file))
     if not files_present:
@@ -41,11 +40,17 @@ def main():
     output_file = Path(path,file_name)
     create_file(output_file)
 
-    mass = 900.1
-    serial = "20UPGXB2000035"
-    run = 1
-    analysis_version = "v1"
-    scale_accuracy = 1.
+    #mass = 900.1
+    #serial = "20UPGXB2000035"
+    #run = 1
+    #analysis_version = "v1"
+    scale_accuracy = 1. # Harcoded for now
+
+    mass = float(input("Enter mass: "))
+    serial = input("Enter serial number: ")
+    run = input("Enter run number: ")
+    analysis_version = input("Enter analysis version: ")
+
     add_data_csv(output_file,serial,mass,scale_accuracy,run,analysis_version)
     add_data_json(json_path,serial,mass,scale_accuracy,run,analysis_version)
 
