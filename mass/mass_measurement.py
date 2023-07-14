@@ -27,6 +27,7 @@ def add_date_folder():
 def add_folder(path):
     files_present = glob.glob(str(path))
     if not files_present:
+        print("Creating folder: "+str(path))
         path.mkdir(parents=True, exist_ok=False)
     return path
 
@@ -59,8 +60,6 @@ def main():
 def add_data_csv(output_file,serial,mass,scale_accuracy,run,analysis_version):
     df = pd.read_csv(output_file)
 
-    print(df)
-
     index = len(df.index)
 
     df.loc[index,"component"] = serial
@@ -81,6 +80,7 @@ def add_data_csv(output_file,serial,mass,scale_accuracy,run,analysis_version):
     df.loc[index,"result1_value"] = mass 
     #df.loc[len(df.index)] = data
 
+    print("Writing to file: "+str(output_file))
     print(df)
 
     df.to_csv(output_file,index=False)
@@ -109,6 +109,7 @@ def add_data_json(json_path,serial,mass,scale_accuracy,run,analysis_version):
     
     mass_json = json.dumps(mass_dict)
     with open(json_file, "w") as outfile:
+        print("Writing to file: "+str(json_file))
         outfile.write(mass_json)
 
 
