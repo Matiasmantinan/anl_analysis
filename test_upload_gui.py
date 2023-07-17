@@ -6,6 +6,8 @@ from tkinter import ttk
 from pathlib import Path
 from datetime import datetime
 import glob
+import json
+import os
 
 import mass.mass_measurement as mass_measurement
 import metrology.metrology_measurement as metrology_measurement
@@ -18,6 +20,14 @@ import metrology.output_metrology as output_metrology
 class TestUploadGUI:
 
     def __init__(self):
+        metrology_config = json.load(open("./config/metrology_config.json"))
+        mass_config = json.load(open("./config/mass_config.json"))
+
+        self.metrology_directory = metrology_config["metrology_directory"]
+        self.flex_jig_file = metrology_config["flex_jig_file"]
+        self.bareModule_jig_file = metrology_config["bareModule_jig_file"]
+        self.assembledModule_jig_file = metrology_config["assembledModule_jig_file"]
+
 
         #Create window
         self.root = tk.Tk()
@@ -111,27 +121,6 @@ class TestUploadGUI:
         self.frame.pack()
 
 
-        self.file_selector_button = tk.Button(self.frame, text="Choose a file",font=("Arial", 16),command=self.select_file)
-        self.file_selector_button.grid(row=0, column=0, padx=5, pady=30,sticky="EW")
-
-        self.file_selector_label = tk.Label(self.frame, text="-", font=("Arial", 16))
-        self.file_selector_label.grid(row=0, column=1, padx=5, pady=30, sticky="EW")
-
-
-        self.Jig_file_selector_button = tk.Button(self.frame, text="Choose a Jig file",font=("Arial", 16),command=self.select_Jig_file)
-        self.Jig_file_selector_button.grid(row=1, column=0, padx=5, pady=30,sticky="EW")
-
-        self.Jig_file_selector_label = tk.Label(self.frame, text="-", font=("Arial", 16))
-        self.Jig_file_selector_label.grid(row=1, column=1, padx=5, pady=30, sticky="EW")
-
-
-        self.serial_label = tk.Label(self.frame, text="Serial Number", font=("Arial", 16))
-        self.serial_label.grid(row=2, column=0, padx=5, pady=30, sticky="EW")
-
-        self.serial_entry = tk.Entry(self.frame, font=("Arial", 16))
-        self.serial_entry.grid(row=2, column=1, padx=5, pady=30,sticky="EW")
-
-
 
         self.component_options = [
             "Bare Module",
@@ -141,12 +130,34 @@ class TestUploadGUI:
 
 
         self.component_type_label = tk.Label(self.frame, text="Component type", font=("Arial", 16))
-        self.component_type_label.grid(row=3, column=0, padx=5, pady=30, sticky="EW")
+        self.component_type_label.grid(row=0, column=0, padx=5, pady=30, sticky="EW")
 
         self.component_type = tk.StringVar()
   
-        self.component_type_menu = tk.OptionMenu( self.frame , self.component_type , *self.component_options )
-        self.component_type_menu.grid(row=3, column=1, padx=5, pady=30,sticky="EW")
+        self.component_type_menu = tk.OptionMenu( self.frame , self.component_type , *self.component_options,command=self.component_type_selected)
+        self.component_type_menu.grid(row=0, column=1, padx=5, pady=30,sticky="EW")
+
+
+        self.file_selector_button = tk.Button(self.frame, text="Choose a file",font=("Arial", 16),command=self.select_file)
+        self.file_selector_button.grid(row=1, column=0, padx=5, pady=30,sticky="EW")
+
+        self.file_selector_label = tk.Label(self.frame, text="-", font=("Arial", 16))
+        self.file_selector_label.grid(row=1, column=1, padx=5, pady=30, sticky="EW")
+
+
+        self.Jig_file_selector_button = tk.Button(self.frame, text="Choose a Jig file",font=("Arial", 16),command=self.select_Jig_file)
+        self.Jig_file_selector_button.grid(row=2, column=0, padx=5, pady=30,sticky="EW")
+
+        self.Jig_file_selector_label = tk.Label(self.frame, text="-", font=("Arial", 16))
+        self.Jig_file_selector_label.grid(row=2, column=1, padx=5, pady=30, sticky="EW")
+
+
+        self.serial_label = tk.Label(self.frame, text="Serial Number", font=("Arial", 16))
+        self.serial_label.grid(row=3, column=0, padx=5, pady=30, sticky="EW")
+
+        self.serial_entry = tk.Entry(self.frame, font=("Arial", 16))
+        self.serial_entry.grid(row=3, column=1, padx=5, pady=30,sticky="EW")
+
 
 
         self.run_label = tk.Label(self.frame, text="Run Number", font=("Arial", 16))
@@ -253,5 +264,27 @@ class TestUploadGUI:
         self.Jig_file_selector_label.destroy()
         self.Jig_file_selector_label = tk.Label(self.frame, text=self.input_Jig_file.split("/")[-1], font=("Arial", 16))
         self.Jig_file_selector_label.grid(row=1, column=1, padx=5, pady=30, sticky="EW")
+
+    def component_type_selected(self,selection):
+        component_type = self.component_type.get()
+
+        if component_type=="Flex":
+            infile = max(glob.iglob(self.metrology_directory+"/flex_SQ_*"), key=os.path.getctime)
+            infile_jig = self.flex_jig_file
+        elif component_type =="Assembled Module":
+            infile = max(glob.iglob(self.metrology_directory+"/AssembledModule_SQ*"), key=os.path.getctime)
+            infile_jig = self.assembledModule_jig_file
+        elif component_type == "Bare Module":
+            infile = max(glob.iglob(self.metrology_directory+"/realBM_SQ_*"), key=os.path.getctime)
+            infile_jig = self.bareModule_jig_file
+
+
+        self.file_selector_label.destroy()
+        self.file_selector_label = tk.Label(self.frame, text=infile.split("/")[-1], font=("Arial", 16))
+        self.file_selector_label.grid(row=1, column=1, padx=5, pady=30, sticky="EW")
+
+        self.Jig_file_selector_label.destroy()
+        self.Jig_file_selector_label = tk.Label(self.frame, text=infile_jig.split("/")[-1], font=("Arial", 16))
+        self.Jig_file_selector_label.grid(row=2, column=1, padx=5, pady=30, sticky="EW")
 
 TestUploadGUI()
