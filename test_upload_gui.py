@@ -248,6 +248,12 @@ class TestUploadGUI:
             metrology_measurement.BMMeasurement(serial,input_file, input_Jig_file, output_csv_file, json_path)
 
 
+        print(self.rename_file_query.get())
+
+        if self.rename_file_query.get() == 1:
+            print('Renaming file:')
+            input_file = metrology_measurement.renameFile(input_file,serial)
+        
 
     def select_file(self):
         self.input_file = filedialog.askopenfilename(initialdir="./",title="Select a file",filetypes=(("Text files","*.txt"),("all files","*.*")))
@@ -278,6 +284,8 @@ class TestUploadGUI:
             infile = max(glob.iglob(self.metrology_directory+"/realBM_SQ_*"), key=os.path.getctime)
             infile_jig = self.bareModule_jig_file
 
+        self.input_file = infile
+        self.input_Jig_file = infile_jig
 
         self.file_selector_label.destroy()
         self.file_selector_label = tk.Label(self.frame, text=infile.split("/")[-1], font=("Arial", 16))
