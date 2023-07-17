@@ -319,8 +319,8 @@ def assemblyMeasurement(infile,infile_jig):
 
     print ("Average PC height:  ", abs(np.mean([np.mean(PC_1_z), np.mean(PC_2_z), np.mean(PC_3_z)])))
 
-    HV_z = np.subtract(jig_HV, HV)
-    print ("Avg HV height: ", abs(np.mean(HV_z)) )
+    HV_z = abs(np.subtract(jig_HV, HV))
+    print ("Avg HV height: ", np.mean(HV_z) )
 
 def BMMeasurement(serialNum,infile, infile_jig,outputcsv,outputjson):
     DX_FE = 0
