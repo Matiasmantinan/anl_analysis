@@ -114,3 +114,13 @@ def add_metrology_FLEX_data_json(json_path,serial,run,analysis_version,results):
     with open(json_file, "w") as outfile:
         outfile.write(mass_json)
 
+
+
+def test_passed(mass):
+    #insert logic
+    return "True"
+
+
+def test_problems(mass):
+    #insert logic
+    return "False"

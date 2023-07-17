@@ -11,6 +11,10 @@ import mass.mass_measurement as mass_measurement
 import metrology.metrology_measurement as metrology_measurement
 import metrology.output_metrology as output_metrology
 
+
+
+
+
 class TestUploadGUI:
 
     def __init__(self):
@@ -193,7 +197,7 @@ class TestUploadGUI:
         output_file = Path(path,file_name)
         mass_measurement.create_mass_csv_file(output_file)
 
-        scale_accuracy = 0.1
+        scale_accuracy = 0.0032
 
         mass_measurement.add_data_csv(output_file,serial,mass,scale_accuracy,run,analysis_version)
         mass_measurement.add_data_json(json_path,serial,mass,scale_accuracy,run,analysis_version)

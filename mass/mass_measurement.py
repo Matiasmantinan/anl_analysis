@@ -45,7 +45,7 @@ def main():
     #serial = "20UPGXB2000035"
     #run = 1
     #analysis_version = "v1"
-    scale_accuracy = 1. # Harcoded for now
+    scale_accuracy = 0.0032 # Harcoded for now
 
     mass = float(input("Enter mass: "))
     serial = input("Enter serial number: ")
@@ -67,7 +67,7 @@ def add_data_csv(output_file,serial,mass,scale_accuracy,run,analysis_version):
     df.loc[index,"componentType"] = "BARE_MODULE"
     df.loc[index,"stage"] = "BAREMODULERECEPTION"
     df.loc[index,"testType"] = "MASS_MEASUREMENT"
-    df.loc[index,"date"] = datetime.now().strftime("%d/%m/%y")
+    df.loc[index,"date"] = str(datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'))
     df.loc[index,"runNumber"] = run
     df.loc[index,"property1_key"] = "SCALE_ACCURACY"
     df.loc[index,"property1_value"] = scale_accuracy
