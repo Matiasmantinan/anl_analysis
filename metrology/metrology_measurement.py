@@ -165,7 +165,7 @@ def flexMeasurement(serialNum,infile,infile_jig,outputcsv,outputjson):
     avg_pc_height = abs(np.mean([np.mean(PC_1_z), np.mean(PC_2_z), np.mean(PC_3_z)]))
     print ("Average PC height:  ", avg_pc_height)
 
-    HV_z = np.subtract(jig_HV, HV)
+    HV_z = abs(np.subtract(jig_HV, HV))
     avg_HV_thickness = np.mean(HV_z)
     print ("Avg HV height: ", avg_HV_thickness )
 
