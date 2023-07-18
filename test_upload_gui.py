@@ -201,7 +201,7 @@ class TestUploadGUI:
         
         date = datetime.now().strftime("%m-%d-%Y")
         path = Path("./results", date)
-        path = mass_measurement.add_folder(path)
+        path = output_metrology.add_folder(path)
 
         json_path = mass_measurement.add_folder(Path(path,"json_data"))
         file_name = "mass_measurement_"+datetime.now().strftime("%m_%d_%y")+".csv"
@@ -248,10 +248,7 @@ class TestUploadGUI:
             metrology_measurement.BMMeasurement(serial,input_file, input_Jig_file, output_csv_file, json_path)
 
 
-        print(self.rename_file_query.get())
-
         if self.rename_file_query.get() == 1:
-            print('Renaming file:')
             input_file = metrology_measurement.renameFile(input_file,serial)
         
 

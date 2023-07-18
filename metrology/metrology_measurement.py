@@ -5,7 +5,7 @@ import glob
 import os
 from pathlib import Path
 
-from .output_metrology import *
+#from output_metrology import *
 
 
 def main():
